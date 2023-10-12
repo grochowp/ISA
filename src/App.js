@@ -5,6 +5,7 @@ import {
   IntToBin,
   RealToInt,
   IntToReal,
+  RealToFX,
 } from "./functions";
 
 const Table = ({ results }) => (
@@ -60,6 +61,7 @@ export default function App() {
       const xBin = IntToBin(xInt1);
       const xInt2 = BinToInt(xBin);
       const xReal2 = IntToReal(Number(a), Number(b), xInt2, l, d);
+      const fX = RealToFX(xReal2);
 
       const newResult = {
         lp: i + 1,
@@ -68,8 +70,7 @@ export default function App() {
         xBin,
         xInt2: xInt1,
         xReal2,
-
-        fX: `f(x${i + 1})`,
+        fX,
       };
       newResults.push(newResult);
     }

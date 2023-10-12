@@ -17,3 +17,7 @@ export function BinToInt(x) {
 export function IntToReal(a, b, x, l, d) {
   return ((x * (b - a)) / (Math.pow(2, l) - 1) + a).toFixed(d);
 }
+
+export function RealToFX(x) {
+  return (x % 1) * (Math.cos(20 * Math.PI * x) - Math.sin(x));
+}
