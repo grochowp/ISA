@@ -1,12 +1,28 @@
 import { useState } from "react";
-import {
-  BinToInt,
-  CreateXReal1,
-  IntToBin,
-  RealToInt,
-  IntToReal,
-  RealToFX,
-} from "./functions";
+
+function CreateXReal1(a, b, d) {
+  return (Math.random() * (b - a) + a).toFixed(d);
+}
+
+function RealToInt(a, b, x, l, d) {
+  return Math.floor((1 / (b - a)) * (x - a) * (Math.pow(2, l) - 1));
+}
+
+function IntToBin(x) {
+  return (x >>> 0).toString(2);
+}
+
+function BinToInt(x) {
+  return parseInt(x, 2);
+}
+
+function IntToReal(a, b, x, l, d) {
+  return ((x * (b - a)) / (Math.pow(2, l) - 1) + a).toFixed(d);
+}
+
+function RealToFX(x) {
+  return (x % 1) * (Math.cos(20 * Math.PI * x) - Math.sin(x));
+}
 
 const Table = ({ results }) => (
   <div className="results">
