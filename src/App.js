@@ -68,6 +68,7 @@ export default function App() {
         xBin,
         xInt2: xInt1,
         xReal2,
+
         fX: `f(x${i + 1})`,
       };
       newResults.push(newResult);
