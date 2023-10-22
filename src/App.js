@@ -1,28 +1,5 @@
 import { useState } from "react";
-
-function CreateXReal1(a, b, d) {
-  return (Math.random() * (b - a) + a).toFixed(d);
-}
-
-function RealToInt(a, b, x, l, d) {
-  return Math.floor((1 / (b - a)) * (x - a) * (Math.pow(2, l) - 1));
-}
-
-function IntToBin(x) {
-  return (x >>> 0).toString(2);
-}
-
-function BinToInt(x) {
-  return parseInt(x, 2);
-}
-
-function IntToReal(a, b, x, l, d) {
-  return ((x * (b - a)) / (Math.pow(2, l) - 1) + a).toFixed(d);
-}
-
-function RealToFX(x) {
-  return (x % 1) * (Math.cos(20 * Math.PI * x) - Math.sin(x));
-}
+import { LpToFx, GxToPi, FxToGx, PiToR, RToXRealSelected } from "./functions";
 
 const Table = ({ results }) => (
   <div className="results">
@@ -31,21 +8,23 @@ const Table = ({ results }) => (
         <tr className="tr">
           <th>Lp</th>
           <th>xReal</th>
-          <th>xInt</th>
-          <th>xBin</th>
-          <th>xInt</th>
-          <th>xReal</th>
           <th>f(x)</th>
+          <th>g(x)</th>
+          <th>Pi</th>
+          <th>Qi</th>
+          <th>r</th>
+          <th>xRealSelected</th>
         </tr>
-        {results.map(({ lp, xReal1, xInt1, xBin, xInt2, xReal2, fX }) => (
+        {results.map(({ lp, xReal1, fX, gX, Pi, Qi, r, xRealSelected }) => (
           <tr key={lp}>
             <td>{lp}</td>
             <td>{xReal1}</td>
-            <td>{xInt1}</td>
-            <td>{xBin}</td>
-            <td>{xInt2}</td>
-            <td>{xReal2}</td>
             <td>{fX}</td>
+            <td>{gX}</td>
+            <td>{Pi}</td>
+            <td>{Qi}</td>
+            <td>{r}</td>
+            <td>{xRealSelected}</td>
           </tr>
         ))}
       </tbody>
@@ -53,44 +32,25 @@ const Table = ({ results }) => (
   </div>
 );
 
-const Results = [];
-
 export default function App() {
   const [a, setA] = useState(-4);
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
   const [n, setN] = useState(10);
+  const [minmax, setMinmax] = useState("min");
+  const [displayResults, setDisplayResults] = useState(false);
+  const [results, setResults] = useState([]);
+
   const dMultiplier = d === 1 ? 0.1 : d === 2 ? 0.01 : 0.001;
   const l = Math.ceil(Math.log2((b - a) / dMultiplier) + 1);
-  console.log(l);
-  const [displayResults, setDisplayResults] = useState(false);
-  const [results, setResults] = useState(Results);
 
   function handleStart() {
-    setDisplayResults((display) => !display);
-
-    let newResults = [];
-
-    for (let i = 0; i < n; i++) {
-      const xReal1 = CreateXReal1(Number(a), Number(b), d);
-      const xInt1 = RealToInt(Number(a), Number(b), xReal1, l, d);
-      const xBin = IntToBin(xInt1);
-      const xInt2 = BinToInt(xBin);
-      const xReal2 = IntToReal(Number(a), Number(b), xInt2, l, d);
-      const fX = RealToFX(xReal2);
-
-      const newResult = {
-        lp: i + 1,
-        xReal1,
-        xInt1,
-        xBin,
-        xInt2: xInt1,
-        xReal2,
-        fX,
-      };
-      newResults.push(newResult);
-    }
-
+    !displayResults && setDisplayResults(true);
+    const tempFx = LpToFx(a, b, d, n);
+    const tempGx = FxToGx(tempFx, dMultiplier, minmax);
+    const tempPi = GxToPi(tempGx);
+    const tempR = PiToR(tempPi);
+    const newResults = RToXRealSelected(tempR);
     setResults(newResults);
   }
 
@@ -110,9 +70,18 @@ export default function App() {
           N = <Inputs variab={n} setVar={setN} />
         </span>
         <span>
-          <button onClick={handleStart}>
-            {displayResults ? "Stop" : "Start"}
-          </button>
+          min/max =
+          <select
+            className="inputBox"
+            value={minmax}
+            onChange={(e) => setMinmax(e.target.value)}
+          >
+            <option value="min">min</option>
+            <option value="max">max</option>
+          </select>
+        </span>
+        <span>
+          <button onClick={handleStart}>Start</button>
         </span>
       </div>
 
