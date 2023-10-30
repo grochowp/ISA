@@ -184,7 +184,7 @@ export function KidsToFX(results, pm, a, b, l, d) {
       result.xBinPoMutacji = newXBin.join("");
 
       const tempNewBin = BinToInt(result.xBinPoMutacji, l);
-      const tempNewReal = IntToReal(a, b, tempNewBin, l, d);
+      const tempNewReal = IntToReal(Number(a), Number(b), tempNewBin, l, d);
 
       result.xRealPoMutacji = tempNewReal;
       result.newFx = RealToFX(result.xRealPoMutacji);
