@@ -2,7 +2,7 @@ export function CreateXReal1(a, b, d) {
   return (Math.random() * (b - a) + a).toFixed(d);
   // return -2.627;
 }
-export function RealToInt(a, b, x, l, d) {
+export function RealToInt(a, b, x, l) {
   return Math.floor((1 / (b - a)) * (x - a) * (Math.pow(2, l) - 1));
 }
 export function IntToBin(x, l) {
@@ -20,7 +20,7 @@ export function RealToFX(x) {
 
 ///////////////////////////////////// lab2
 
-export function LpToFx(a, b, d, n) {
+export function LpToFx(a, b, d, n, l) {
   let newResults = [];
 
   for (let i = 0; i < n; i++) {
@@ -57,7 +57,7 @@ export function GxToPi(results) {
   const sum = results.reduce((accumulator, currentValue) => {
     return accumulator + currentValue.gX;
   }, 0);
-
+  // Pi
   for (let i = 0; i < results.length; i++) {
     results[i].Pi = results[i].gX / sum;
   }
@@ -66,24 +66,70 @@ export function GxToPi(results) {
 
 export function PiToR(results) {
   for (let i = 0; i < results.length; i++) {
-    results[i].r = Math.random().toFixed(2); // R before Qi
+    // R
+    results[i].r = Math.random().toFixed(2);
+    // Qi
     if (i === 0) results[i].Qi = results[i].Pi;
     else results[i].Qi = results[i - 1].Qi + results[i].Pi;
   }
   return results;
 }
 
-export function RToXRealSelected(results) {
+export function RToParents(results, a, b, l) {
   for (let i = 0; i < results.length; i++) {
-    if (i === 0) {
-      results[i].xRealSelected =
-        results[i].Qi > results[i].r ? results[i].xReal1 : "-";
-    } else {
-      results[i].xRealSelected =
-        results[i - 1].Qi < results[i].r && results[i].r <= results[i].Qi
-          ? results[i].xReal1
-          : "-";
+    // xBin
+    const xInt = RealToInt(a, b, results[i].xReal1, l);
+    const xBin = IntToBin(xInt, l);
+
+    // xRealSelected warunkowe dla i = 0
+    if (i === 0 && results[i].Qi > results[i].r) {
+      results[i].xRealSelected = results[i].xReal1;
+      // Parents jesli xRealSelected istnieje
+      results[i].xBin = xBin;
+      results[i].parents = xBin;
+      results[i].Pc = 1;
+    }
+    // xRealSelected warunkowe dla i > 0
+    else if (
+      i > 0 &&
+      results[i - 1].Qi < results[i].r &&
+      results[i].r <= results[i].Qi
+    ) {
+      results[i].xRealSelected = results[i].xReal1;
+      results[i].xBin = xBin;
+      results[i].parents = xBin;
     }
   }
+
   return results;
+}
+
+export function ParentsToKids(results, l) {
+  let RandomPc = (Math.random() * (l - 4) + 2).toFixed(0);
+  let counter = 1;
+  let tempBin1;
+  let tempBin2;
+  let tempBin1Index;
+  let tempBin2Index;
+
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].xRealSelected) {
+      results[i].Pc = RandomPc;
+      counter++;
+
+      tempBin1 = results[i].xBin;
+      tempBin1Index = results[i].lp;
+    } else if (tempBin1 && !tempBin2) {
+      tempBin2 = results[i].xBin;
+      tempBin2Index = results[i].lp;
+      results[i].kids =
+        tempBin2.substring(0, results[i].Pc) +
+        tempBin1.substring(results[i].Pc);
+      results[tempBin1Index - 1].kids =
+        tempBin1.substring(0, results[i].Pc) +
+        tempBin2.substring(results[i].Pc);
+      tempBin1 = "";
+      tempBin2 = "";
+    }
+  }
 }

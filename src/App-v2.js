@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { LpToFx, GxToPi, FxToGx, PiToR, RToParents } from "./functions";
+import {
+  LpToFx,
+  FxToGx,
+  PcToKids,
+  KidsToFX,
+  rToPc,
+  GxToR,
+} from "./functions-v2";
 
 const Table = ({ results }) => (
   <div className="results">
@@ -15,16 +22,33 @@ const Table = ({ results }) => (
           <th>r</th>
           <th>xRealSelected</th>
           <th>xBin</th>
-          <th>Parents</th>
+          <th>Rodzice</th>
           <th>Pc</th>
           <th>Dzieci</th>
-          <th>Mutacja</th>
+          <th>Punkty mutacji</th>
           <th>Po mutacji</th>
-          <th>Po MutacjiReal</th>
+          <th>Po Mutacji Real</th>
           <th>f(x)</th>
         </tr>
         {results.map(
-          ({ lp, xReal1, fX, gX, Pi, Qi, r, xRealSelected, xBin, parents }) => (
+          ({
+            lp,
+            xReal1,
+            fX,
+            gX,
+            Pi,
+            Qi,
+            r,
+            xRealSelected,
+            xBin,
+            parents,
+            Pc,
+            kids,
+            pktMutacji,
+            xBinPoMutacji,
+            xRealPoMutacji,
+            newFx,
+          }) => (
             <tr key={lp}>
               <td>{lp}</td>
               <td>{xReal1}</td>
@@ -36,12 +60,12 @@ const Table = ({ results }) => (
               <td>{xRealSelected}</td>
               <td>{xBin}</td>
               <td>{parents}</td>
-              <td> </td>
-              <td> </td>
-              <td> </td>
-              <td> </td>
-              <td> </td>
-              <td> </td>
+              <td>{Pc}</td>
+              <td>{kids}</td>
+              <td>{pktMutacji}</td>
+              <td>{xBinPoMutacji}</td>
+              <td>{xRealPoMutacji}</td>
+              <td>{newFx}</td>
             </tr>
           )
         )}
@@ -55,6 +79,8 @@ export default function App() {
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
   const [n, setN] = useState(10);
+  const [pk, setPk] = useState(0.7);
+  const [pm, setPm] = useState(0.01);
   const [minmax, setMinmax] = useState("min");
   const [displayResults, setDisplayResults] = useState(false);
   const [results, setResults] = useState([]);
@@ -66,10 +92,10 @@ export default function App() {
     !displayResults && setDisplayResults(true);
     const tempFx = LpToFx(a, b, d, n, l);
     const tempGx = FxToGx(tempFx, dMultiplier, minmax);
-    const tempPi = GxToPi(tempGx);
-    const tempR = PiToR(tempPi);
-    const newResults = RToParents(tempR, a, b, l);
-
+    const tempParents = GxToR(tempGx);
+    const tempSelected = rToPc(tempParents, a, b, l, pk);
+    const tempKids = PcToKids(tempSelected, l);
+    const newResults = KidsToFX(tempKids, pm, a, b, l, d);
     setResults(newResults);
   }
 
@@ -98,6 +124,12 @@ export default function App() {
             <option value="min">min</option>
             <option value="max">max</option>
           </select>
+        </span>
+        <span>
+          pK = <Inputs variab={pk} setVar={setPk} />
+        </span>
+        <span>
+          pM = <Inputs variab={pm} setVar={setPm} />
         </span>
         <span>
           <button onClick={handleStart}>Start</button>
