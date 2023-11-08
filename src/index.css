@@ -42,3 +42,10 @@ td {
   border: 1px solid black;
   width: 100px;
 }
+
+.choose {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  gap: 3rem;
+}

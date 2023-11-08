@@ -8,6 +8,22 @@ import {
   GxToR,
 } from "./functions-v2";
 
+const Graph = ({ results }) => {
+  return (
+    <div className="results">
+      <table className="table">aaaaaaaaaaaaa</table>
+    </div>
+  );
+};
+
+const Tests = ({ results }) => {
+  return (
+    <div className="results">
+      <table className="table">bbbbbbbbbbbb</table>
+    </div>
+  );
+};
+
 const Table = ({ results }) => (
   <div className="results">
     <table className="table">
@@ -82,23 +98,45 @@ export default function App() {
   const [pk, setPk] = useState(0.7);
   const [pm, setPm] = useState(0.01);
   const [minmax, setMinmax] = useState("min");
-  const [displayResults, setDisplayResults] = useState(false);
   const [results, setResults] = useState([]);
+  const [displayResults, setDisplayResults] = useState(false);
+  const [displayGraph, setDisplayGraph] = useState(false);
+  const [displayTests, setDisplayTests] = useState(false);
 
   const dMultiplier = d === 1 ? 0.1 : d === 2 ? 0.01 : 0.001;
   const l = Math.ceil(Math.log2((b - a) / dMultiplier) + 1);
 
   function handleStart() {
     !displayResults && setDisplayResults(true);
+    displayGraph && setDisplayGraph(false);
+    displayTests && setDisplayTests(false);
+
     const tempFx = LpToFx(a, b, d, n, l);
     const tempGx = FxToGx(tempFx, dMultiplier, minmax);
     const tempParents = GxToR(tempGx);
-    const tempSelected = rToPc(tempParents, a, b, l, pk);
+    const tempSelected = rToPc(tempParents, a, b, l, pk, n);
     const tempKids = PcToKids(tempSelected, l);
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
     setResults(newResults);
   }
 
+  function handleData() {
+    !displayResults && setDisplayResults(true);
+    displayGraph && setDisplayGraph(false);
+    displayTests && setDisplayTests(false);
+  }
+
+  function handleGraph() {
+    !displayGraph && setDisplayGraph(true);
+    displayResults && setDisplayResults(false);
+    displayTests && setDisplayTests(false);
+  }
+
+  function handleTests() {
+    !displayTests && setDisplayTests(true);
+    displayGraph && setDisplayGraph(false);
+    displayResults && setDisplayResults(false);
+  }
   return (
     <>
       <div className="inputs">
@@ -132,7 +170,18 @@ export default function App() {
           pM = <Inputs variab={pm} setVar={setPm} />
         </span>
         <span>
-          <button onClick={handleStart}>Start</button>
+          <button onClick={handleStart}>START</button>
+        </span>
+      </div>
+      <div className="choose">
+        <span>
+          <button onClick={handleData}>DANE</button>
+        </span>
+        <span>
+          <button onClick={handleGraph}>WYKRES</button>
+        </span>
+        <span>
+          <button onClick={handleTests}>TESTY</button>
         </span>
       </div>
 
@@ -140,6 +189,20 @@ export default function App() {
         <div>
           <br />
           <Table results={results} />
+        </div>
+      )}
+
+      {displayGraph && (
+        <div>
+          <br />
+          <Graph results={results} />
+        </div>
+      )}
+
+      {displayTests && (
+        <div>
+          <br />
+          <Tests results={results} />
         </div>
       )}
     </>

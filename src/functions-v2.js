@@ -73,14 +73,15 @@ export function GxToR(results) {
   return results;
 }
 
-export function rToPc(results, a, b, l, pk) {
+export function rToPc(results, a, b, l, pk, n) {
   let RandomPc = (Math.random() * (l - 4) + 2).toFixed(0);
   let counter = 1;
+  let counterParents = 0;
   let xInt;
   let xBin;
 
   for (let i = 0; i < results.length; i++) {
-    if (counter % 2) RandomPc = (Math.random() * (l - 4) + 2).toFixed(0);
+    if (counter % 2) RandomPc = (Math.random() * (l - 2) + 1).toFixed(0);
 
     //xRealSelected
     for (let j = 0; j <= results.length; j++) {
@@ -101,13 +102,15 @@ export function rToPc(results, a, b, l, pk) {
     results[i].xBin = xBin;
 
     // parents i Pc
-    const rng = Math.random();
-    if (rng < pk) {
+    const randomNumber = Math.random();
+    if (randomNumber < pk) {
       results[i].parents = results[i].xBin;
       results[i].Pc = RandomPc;
       counter++;
+      counterParents++;
     }
   }
+  if (counterParents < 2 && n > 1) rToPc(results, a, b, l, pk);
   return results;
 }
 
