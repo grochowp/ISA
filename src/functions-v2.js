@@ -1,6 +1,5 @@
 export function CreateXReal1(a, b, d) {
   return (Math.random() * (b - a) + a).toFixed(d);
-  // return -2.627;
 }
 export function RealToInt(a, b, x, l) {
   return Math.floor((1 / (b - a)) * (x - a) * (Math.pow(2, l) - 1));
@@ -24,8 +23,8 @@ export function LpToFx(a, b, d, n, l) {
   let newResults = [];
 
   for (let i = 0; i < n; i++) {
-    const xReal1 = CreateXReal1(Number(a), Number(b), d);
-    const fX = RealToFX(xReal1);
+    const xReal1 = Number(CreateXReal1(Number(a), Number(b), d));
+    const fX = Number(RealToFX(xReal1));
 
     const newResult = {
       lp: i + 1,

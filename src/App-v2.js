@@ -7,6 +7,9 @@ import {
   rToPc,
   GxToR,
 } from "./functions-v2";
+import { Table } from "./Table";
+import { TableAfter } from "./TableAfter";
+import { loopOverResults } from "./Data";
 
 const Graph = ({ results }) => {
   return (
@@ -24,84 +27,23 @@ const Tests = ({ results }) => {
   );
 };
 
-const Table = ({ results }) => (
-  <div className="results">
-    <table className="table">
-      <tbody>
-        <tr className="tr">
-          <th>Lp</th>
-          <th>xReal</th>
-          <th>f(x)</th>
-          <th>g(x)</th>
-          <th>Pi</th>
-          <th>Qi</th>
-          <th>r</th>
-          <th>xRealSelected</th>
-          <th>xBin</th>
-          <th>Rodzice</th>
-          <th>Pc</th>
-          <th>Dzieci</th>
-          <th>Punkty mutacji</th>
-          <th>Po mutacji</th>
-          <th>Po Mutacji Real</th>
-          <th>f(x)</th>
-        </tr>
-        {results.map(
-          ({
-            lp,
-            xReal1,
-            fX,
-            gX,
-            Pi,
-            Qi,
-            r,
-            xRealSelected,
-            xBin,
-            parents,
-            Pc,
-            kids,
-            pktMutacji,
-            xBinPoMutacji,
-            xRealPoMutacji,
-            newFx,
-          }) => (
-            <tr key={lp}>
-              <td>{lp}</td>
-              <td>{xReal1}</td>
-              <td>{fX}</td>
-              <td>{gX}</td>
-              <td>{Pi}</td>
-              <td>{Qi}</td>
-              <td>{r}</td>
-              <td>{xRealSelected}</td>
-              <td>{xBin}</td>
-              <td>{parents}</td>
-              <td>{Pc}</td>
-              <td>{kids}</td>
-              <td>{pktMutacji}</td>
-              <td>{xBinPoMutacji}</td>
-              <td>{xRealPoMutacji}</td>
-              <td>{newFx}</td>
-            </tr>
-          )
-        )}
-      </tbody>
-    </table>
-  </div>
-);
-
 export default function App() {
   const [a, setA] = useState(-4);
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
-  const [n, setN] = useState(10);
+  const [n, setN] = useState(100);
+  const [t, setT] = useState(50);
   const [pk, setPk] = useState(0.7);
   const [pm, setPm] = useState(0.01);
   const [minmax, setMinmax] = useState("min");
   const [results, setResults] = useState([]);
+
+  const [resultsAfter, setResultsAfter] = useState([]);
+
   const [displayResults, setDisplayResults] = useState(false);
   const [displayGraph, setDisplayGraph] = useState(false);
   const [displayTests, setDisplayTests] = useState(false);
+  const [displayData, setDisplayData] = useState(false);
 
   const dMultiplier = d === 1 ? 0.1 : d === 2 ? 0.01 : 0.001;
   const l = Math.ceil(Math.log2((b - a) / dMultiplier) + 1);
@@ -118,24 +60,37 @@ export default function App() {
     const tempKids = PcToKids(tempSelected, l);
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
     setResults(newResults);
+
+    // const newResultsAfter = loopOverResults(newResults, t);
+    // setResultsAfter(newResultsAfter);
   }
 
-  function handleData() {
+  function handleStarter() {
     !displayResults && setDisplayResults(true);
     displayGraph && setDisplayGraph(false);
     displayTests && setDisplayTests(false);
+    displayData && setDisplayData(false);
+  }
+
+  function handleData() {
+    !displayData && setDisplayData(true);
+    displayGraph && setDisplayGraph(false);
+    displayTests && setDisplayTests(false);
+    displayResults && setDisplayResults(false);
   }
 
   function handleGraph() {
     !displayGraph && setDisplayGraph(true);
     displayResults && setDisplayResults(false);
     displayTests && setDisplayTests(false);
+    displayData && setDisplayData(false);
   }
 
   function handleTests() {
     !displayTests && setDisplayTests(true);
     displayGraph && setDisplayGraph(false);
     displayResults && setDisplayResults(false);
+    displayData && setDisplayData(false);
   }
   return (
     <>
@@ -153,6 +108,9 @@ export default function App() {
           N = <Inputs variab={n} setVar={setN} />
         </span>
         <span>
+          T = <Inputs variab={t} setVar={setT} />
+        </span>
+        {/* <span>
           min/max =
           <select
             className="inputBox"
@@ -162,7 +120,7 @@ export default function App() {
             <option value="min">min</option>
             <option value="max">max</option>
           </select>
-        </span>
+        </span> */}
         <span>
           pK = <Inputs variab={pk} setVar={setPk} />
         </span>
@@ -174,6 +132,9 @@ export default function App() {
         </span>
       </div>
       <div className="choose">
+        <span>
+          <button onClick={handleStarter}>TABELKA</button>
+        </span>
         <span>
           <button onClick={handleData}>DANE</button>
         </span>
@@ -189,6 +150,13 @@ export default function App() {
         <div>
           <br />
           <Table results={results} />
+        </div>
+      )}
+
+      {displayData && (
+        <div>
+          <br />
+          <TableAfter results={resultsAfter} />
         </div>
       )}
 
