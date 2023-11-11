@@ -49,9 +49,10 @@ export default function App() {
   const l = Math.ceil(Math.log2((b - a) / dMultiplier) + 1);
 
   function handleStart() {
-    !displayResults && setDisplayResults(true);
+    displayResults && setDisplayResults(false);
     displayGraph && setDisplayGraph(false);
     displayTests && setDisplayTests(false);
+    !displayData && setDisplayData(true);
 
     const tempFx = LpToFx(a, b, d, n, l);
     const tempGx = FxToGx(tempFx, dMultiplier, minmax);
@@ -61,8 +62,8 @@ export default function App() {
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
     setResults(newResults);
 
-    // const newResultsAfter = loopOverResults(newResults, t);
-    // setResultsAfter(newResultsAfter);
+    const newResultsAfter = loopOverResults(newResults, t);
+    setResultsAfter(newResultsAfter);
   }
 
   function handleStarter() {
