@@ -13,11 +13,11 @@ export const Table = ({ results }) => {
             <th>r</th>
             <th>xRealSelected</th> */}
             <th>xBin</th>
-            {/* <th>Rodzice</th>
+            <th>Rodzice</th>
             <th>Pc</th>
             <th>Dzieci</th>
             <th>Punkty mutacji</th>
-            <th>Po mutacji</th> */}
+            <th>Po mutacji</th>
             <th>Po Mutacji Real</th>
             <th>f(x)</th>
           </tr>
@@ -50,11 +50,11 @@ export const Table = ({ results }) => {
                     <td>{r}</td>
                     <td>{xRealSelected}</td> */}
                 <td>{xBin}</td>
-                {/* <td>{parents}</td>
-                    <td>{Pc}</td>
-                    <td>{kids}</td>
-                    <td>{pktMutacji}</td>
-                    <td>{xBinPoMutacji}</td> */}
+                <td>{parents}</td>
+                <td>{Pc}</td>
+                <td>{kids}</td>
+                <td>{pktMutacji}</td>
+                <td>{xBinPoMutacji}</td>
                 <td>{xRealPoMutacji}</td>
                 <td>{newFx}</td>
               </tr>
