@@ -14,8 +14,10 @@ export function loopOverResults(
 ) {
   const fMax = [];
   const fMin = [];
-
+  const fMid = [];
   for (let i = 0; i < t; i++) {
+    let sumFX =
+      resultsAfter.reduce((sum, obj) => sum + obj.fX, 0) / resultsAfter.length;
     let max = -Infinity;
     let min = Infinity;
     let maxXReal;
@@ -30,6 +32,7 @@ export function loopOverResults(
       min = resultsAfter[j].newFx < min ? resultsAfter[j].newFx : min;
     }
 
+    fMid.push(sumFX);
     fMax.push(max);
     fMin.push(min);
 
@@ -88,6 +91,7 @@ export function loopOverResults(
       });
       fMax.pop();
       fMin.pop();
+      fMid.pop();
     }
 
     const tempGx = FxToGx(resultsAfter, d, minmax);
@@ -96,7 +100,8 @@ export function loopOverResults(
     const tempKids = PcToKids(tempPc);
     const newResultsAfter = KidsToFX(tempKids, pm, a, b, l, d);
     resultsAfter = newResultsAfter;
-    // console.log(fMax, fMin);
   }
+  console.log(fMax, fMin);
+  console.log(fMid);
   return resultsAfter;
 }
