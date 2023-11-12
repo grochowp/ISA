@@ -10,14 +10,7 @@ import {
 import { Table } from "./Table";
 import { TableAfter } from "./TableAfter";
 import { loopOverResults } from "./Data";
-
-const Graph = ({ results }) => {
-  return (
-    <div className="results">
-      <table className="table">aaaaaaaaaaaaa</table>
-    </div>
-  );
-};
+import { Graph } from "./Graph";
 
 const Tests = ({ results }) => {
   return (
@@ -31,14 +24,14 @@ export default function App() {
   const [a, setA] = useState(-4);
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
-  const [n, setN] = useState(10);
-  const [t, setT] = useState(10);
-  const [pk, setPk] = useState(0.7);
-  const [pm, setPm] = useState(0.01);
+  const [n, setN] = useState(5);
+  const [t, setT] = useState(20);
+  const [pk, setPk] = useState(0.85);
+  const [pm, setPm] = useState(0.005);
   const [minmax, setMinmax] = useState("min");
   const [results, setResults] = useState([]);
-
   const [resultsAfter, setResultsAfter] = useState([]);
+  const [dataGraph, setDataGraph] = useState({});
 
   const [displayResults, setDisplayResults] = useState(false);
   const [displayGraph, setDisplayGraph] = useState(false);
@@ -62,7 +55,7 @@ export default function App() {
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
     setResults(() => newResults);
 
-    const newResultsAfter = loopOverResults(
+    const [newResultsAfter, fMax, fMid, fMin] = loopOverResults(
       newResults,
       t,
       a,
@@ -74,6 +67,16 @@ export default function App() {
       pm,
       minmax
     );
+
+    const resultArray = fMax.map((maxObj, index) => ({
+      max: maxObj,
+      mid: fMid[index],
+      min: fMin[index],
+      name: `pokolenie ${index + 1}`,
+    }));
+
+    setDataGraph(resultArray);
+    console.log(dataGraph);
     setResultsAfter(() => newResultsAfter);
   }
 
@@ -96,8 +99,6 @@ export default function App() {
     displayResults && setDisplayResults(false);
     displayTests && setDisplayTests(false);
     displayData && setDisplayData(false);
-    console.log(results);
-    console.log(resultsAfter);
   }
 
   function handleTests() {
@@ -124,7 +125,7 @@ export default function App() {
         <span>
           T = <Inputs variab={t} setVar={setT} />
         </span>
-        {/* <span>
+        <span>
           min/max =
           <select
             className="inputBox"
@@ -134,7 +135,7 @@ export default function App() {
             <option value="min">min</option>
             <option value="max">max</option>
           </select>
-        </span> */}
+        </span>
         <span>
           pK = <Inputs variab={pk} setVar={setPk} />
         </span>
@@ -146,26 +147,32 @@ export default function App() {
         </span>
       </div>
       <div className="choose">
-        <span>
+        {/* <span>
           <button onClick={handleStarter}>TABELKA</button>
+        </span> */}
+        <span>
+          <button disabled={results.length === 0} onClick={handleData}>
+            DANE
+          </button>
         </span>
         <span>
-          <button onClick={handleData}>DANE</button>
+          <button disabled={results.length === 0} onClick={handleGraph}>
+            WYKRES
+          </button>
         </span>
         <span>
-          <button onClick={handleGraph}>WYKRES</button>
-        </span>
-        <span>
-          <button onClick={handleTests}>TESTY</button>
+          <button disabled={results.length === 0} onClick={handleTests}>
+            TESTY
+          </button>
         </span>
       </div>
 
-      {displayResults && (
+      {/* {displayResults && (
         <div>
           <br />
           <Table results={results} />
         </div>
-      )}
+      )} */}
 
       {displayData && (
         <div>
@@ -177,7 +184,7 @@ export default function App() {
       {displayGraph && (
         <div>
           <br />
-          <Graph results={results} />
+          <Graph dataGraph={dataGraph} />
         </div>
       )}
 

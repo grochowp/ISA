@@ -9,10 +9,10 @@ export const TableAfter = ({ results }) => (
           <th>xBin</th>
           <th>%</th>
         </tr>
-        {results.map(({ lp, xReal1, fX, xBin, percentage }) => (
+        {results.map(({ lp, xReal, fX, xBin, percentage }) => (
           <tr key={lp}>
             <td>{lp}</td>
-            <td>{xReal1}</td>
+            <td>{xReal}</td>
             <td>{fX}</td>
             <td>{xBin}</td>
             <td>{percentage}</td>

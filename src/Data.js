@@ -24,12 +24,12 @@ export function loopOverResults(
     let maxIndex;
     let selectedIndex;
     for (let j = 0; j < resultsAfter.length; j++) {
-      if (resultsAfter[j].newFx > max) {
-        max = resultsAfter[j].newFx;
+      if (resultsAfter[j].fX > max) {
+        max = resultsAfter[j].fX;
         maxIndex = resultsAfter[j].lp - 1;
-        maxXReal = resultsAfter[j].xRealPoMutacji;
+        maxXReal = resultsAfter[j].xReal1;
       }
-      min = resultsAfter[j].newFx < min ? resultsAfter[j].newFx : min;
+      min = resultsAfter[j].fX < min ? resultsAfter[j].fX : min;
     }
 
     fMid.push(sumFX);
@@ -69,11 +69,14 @@ export function loopOverResults(
         resultsAfter[randomIndex].newFx = max;
       } else {
         resultsAfter.forEach((el) => {
-          el.fX = el.newFx;
-          el.xReal1 = el.xRealPoMutacji;
+          if (el.lp - 1 !== selectedIndex) {
+            el.fX = el.newFx;
+            el.xReal1 = el.xRealPoMutacji;
+          } else {
+            el.fX = el.newFx;
+          }
         });
       }
-
       resultsAfter.forEach((el) => {
         if (el.lp - 1 !== selectedIndex) {
           el.fX = el.newFx;
@@ -101,7 +104,39 @@ export function loopOverResults(
     const newResultsAfter = KidsToFX(tempKids, pm, a, b, l, d);
     resultsAfter = newResultsAfter;
   }
-  console.log(fMax, fMin);
-  console.log(fMid);
-  return resultsAfter;
+
+  const resultsSorted = [];
+
+  const findIndexInSummary = (array, xReal, xBin, fX) => {
+    return array.findIndex(
+      (item) => item.xReal === xReal && item.xBin === xBin && item.fX === fX
+    );
+  };
+
+  const percResult = [...resultsAfter];
+
+  percResult.forEach((obj) => {
+    const { xReal1, xBin, fX } = obj;
+
+    const indexInSummary = findIndexInSummary(resultsSorted, xReal1, xBin, fX);
+
+    if (indexInSummary !== -1) {
+      resultsSorted[indexInSummary].percentage += (1 / percResult.length) * 100;
+    } else {
+      resultsSorted.push({
+        xReal: xReal1,
+        xBin: xBin,
+        fX: fX,
+        percentage: (1 / percResult.length) * 100,
+      });
+    }
+  });
+
+  resultsSorted.sort((a, b) => b.fX - a.fX);
+
+  for (let i = 0; i < resultsSorted.length; i++) {
+    resultsSorted[i].lp = i + 1;
+  }
+
+  return [resultsSorted, fMax, fMid, fMin];
 }
