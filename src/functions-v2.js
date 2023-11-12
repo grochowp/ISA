@@ -104,7 +104,7 @@ export function rToPc(results, a, b, l, pk, n) {
     const randomNumber = Math.random();
     if (randomNumber < pk) {
       results[i].parents = results[i].xBin;
-      results[i].Pc = RandomPc;
+      results[i].Pc = Number(RandomPc);
       counter++;
       counterParents++;
     }
@@ -188,7 +188,7 @@ export function KidsToFX(results, pm, a, b, l, d) {
       const tempNewBin = BinToInt(result.xBinPoMutacji, l);
       const tempNewReal = IntToReal(Number(a), Number(b), tempNewBin, l, d);
 
-      result.xRealPoMutacji = tempNewReal;
+      result.xRealPoMutacji = Number(tempNewReal);
       result.newFx = RealToFX(result.xRealPoMutacji);
     }
   });

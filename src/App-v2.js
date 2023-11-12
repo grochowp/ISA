@@ -31,8 +31,8 @@ export default function App() {
   const [a, setA] = useState(-4);
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
-  const [n, setN] = useState(100);
-  const [t, setT] = useState(50);
+  const [n, setN] = useState(10);
+  const [t, setT] = useState(10);
   const [pk, setPk] = useState(0.7);
   const [pm, setPm] = useState(0.01);
   const [minmax, setMinmax] = useState("min");
@@ -60,10 +60,21 @@ export default function App() {
     const tempSelected = rToPc(tempParents, a, b, l, pk, n);
     const tempKids = PcToKids(tempSelected, l);
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
-    setResults(newResults);
+    setResults(() => newResults);
 
-    const newResultsAfter = loopOverResults(newResults, t);
-    setResultsAfter(newResultsAfter);
+    const newResultsAfter = loopOverResults(
+      newResults,
+      t,
+      a,
+      b,
+      d,
+      n,
+      l,
+      pk,
+      pm,
+      minmax
+    );
+    setResultsAfter(() => newResultsAfter);
   }
 
   function handleStarter() {
@@ -85,6 +96,8 @@ export default function App() {
     displayResults && setDisplayResults(false);
     displayTests && setDisplayTests(false);
     displayData && setDisplayData(false);
+    console.log(results);
+    console.log(resultsAfter);
   }
 
   function handleTests() {
