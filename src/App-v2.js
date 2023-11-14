@@ -24,14 +24,15 @@ export default function App() {
   const [a, setA] = useState(-4);
   const [b, setB] = useState(12);
   const [d, setD] = useState(1);
-  const [n, setN] = useState(5);
-  const [t, setT] = useState(20);
+  const [n, setN] = useState(50);
+  const [t, setT] = useState(100);
   const [pk, setPk] = useState(0.85);
   const [pm, setPm] = useState(0.005);
-  const [minmax, setMinmax] = useState("min");
+  const [minmax, setMinmax] = useState("max");
   const [results, setResults] = useState([]);
   const [resultsAfter, setResultsAfter] = useState([]);
   const [dataGraph, setDataGraph] = useState({});
+  const [elite, setElite] = useState(true);
 
   const [displayResults, setDisplayResults] = useState(false);
   const [displayGraph, setDisplayGraph] = useState(false);
@@ -53,6 +54,7 @@ export default function App() {
     const tempSelected = rToPc(tempParents, a, b, l, pk, n);
     const tempKids = PcToKids(tempSelected, l);
     const newResults = KidsToFX(tempKids, pm, a, b, l, d);
+
     setResults(() => newResults);
 
     const [newResultsAfter, fMax, fMid, fMin] = loopOverResults(
@@ -65,7 +67,8 @@ export default function App() {
       l,
       pk,
       pm,
-      minmax
+      minmax,
+      elite
     );
 
     const resultArray = fMax.map((maxObj, index) => ({
@@ -76,8 +79,11 @@ export default function App() {
     }));
 
     setDataGraph(resultArray);
-    console.log(dataGraph);
     setResultsAfter(() => newResultsAfter);
+  }
+
+  function handleCheckboxChange() {
+    setElite(() => !elite);
   }
 
   function handleStarter() {
@@ -143,6 +149,16 @@ export default function App() {
           pM = <Inputs variab={pm} setVar={setPm} />
         </span>
         <span>
+          <label>
+            Elite:
+            <input
+              type="checkbox"
+              checked={elite}
+              onChange={handleCheckboxChange}
+            />
+          </label>
+        </span>
+        <span>
           <button onClick={handleStart}>START</button>
         </span>
       </div>
@@ -151,17 +167,17 @@ export default function App() {
           <button onClick={handleStarter}>TABELKA</button>
         </span> */}
         <span>
-          <button disabled={results.length === 0} onClick={handleData}>
+          <button disabled={dataGraph.length === 0} onClick={handleData}>
             DANE
           </button>
         </span>
         <span>
-          <button disabled={results.length === 0} onClick={handleGraph}>
+          <button disabled={dataGraph.length === 0} onClick={handleGraph}>
             WYKRES
           </button>
         </span>
         <span>
-          <button disabled={results.length === 0} onClick={handleTests}>
+          <button disabled={dataGraph.length === 0} onClick={handleTests}>
             TESTY
           </button>
         </span>

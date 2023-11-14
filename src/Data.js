@@ -1,4 +1,11 @@
-import { FxToGx, GxToR, KidsToFX, PcToKids, rToPc } from "./functions-v2";
+import {
+  FxToGx,
+  GxToR,
+  KidsToFX,
+  PcToKids,
+  createFx,
+  rToPc,
+} from "./functions-v2";
 
 export function loopOverResults(
   resultsAfter,
@@ -10,11 +17,13 @@ export function loopOverResults(
   l,
   pk,
   pm,
-  minmax
+  minmax,
+  elite
 ) {
   const fMax = [];
   const fMin = [];
   const fMid = [];
+  const resultsSorted = [];
   for (let i = 0; i < t; i++) {
     let sumFX =
       resultsAfter.reduce((sum, obj) => sum + obj.fX, 0) / resultsAfter.length;
@@ -22,12 +31,12 @@ export function loopOverResults(
     let min = Infinity;
     let maxXReal;
     let maxIndex;
-    let selectedIndex;
+
     for (let j = 0; j < resultsAfter.length; j++) {
       if (resultsAfter[j].fX > max) {
         max = resultsAfter[j].fX;
-        maxIndex = resultsAfter[j].lp - 1;
-        maxXReal = resultsAfter[j].xReal1;
+        maxIndex = resultsAfter[j].lp;
+        maxXReal = resultsAfter[j].xReal;
       }
       min = resultsAfter[j].fX < min ? resultsAfter[j].fX : min;
     }
@@ -36,17 +45,20 @@ export function loopOverResults(
     fMax.push(max);
     fMin.push(min);
 
-    if (fMax.length === 1 || fMax[i] >= fMax[i - 1]) {
+    if (fMax.length === 1 || (fMax[i] >= fMax[i - 1] && elite === true)) {
+      const sameObject = resultsAfter.find(
+        (el) => el.newFx === max && el.lp === maxIndex
+      );
       const selectedObject = resultsAfter.find(
-        (el) => el.newFx === max && el.lp - 1 !== maxIndex
+        (el) => el.newFx === max && el.lp !== maxIndex
       );
 
-      // console.log(selectedObject);
-
-      if (!selectedObject) {
+      if (sameObject) {
+        resultsAfter[sameObject.lp].xRealPoMutacji = maxXReal;
+      } else if (!selectedObject && !sameObject) {
         let availableIndices = resultsAfter
           .filter((el) => el.lp !== maxIndex)
-          .map((el) => el.lp - 1);
+          .map((el) => el.lp);
 
         let randomIndex;
         do {
@@ -57,7 +69,8 @@ export function loopOverResults(
               Math.floor(Math.random() * availableIndices.length)
             ];
 
-          const currentIndex = randomIndex;
+          const currentIndex = resultsAfter[randomIndex].lp;
+
           if (resultsAfter[currentIndex].newFx >= max) {
             availableIndices = availableIndices.filter(
               (index) => index !== currentIndex
@@ -65,39 +78,27 @@ export function loopOverResults(
           }
         } while (resultsAfter[randomIndex].newFx >= max);
 
-        selectedIndex = randomIndex;
-        resultsAfter[randomIndex].newFx = max;
+        resultsAfter[randomIndex].xRealPoMutacji = maxXReal;
       } else {
-        resultsAfter.forEach((el) => {
-          if (el.lp - 1 !== selectedIndex) {
-            el.fX = el.newFx;
-            el.xReal1 = el.xRealPoMutacji;
-          } else {
-            el.fX = el.newFx;
-          }
-        });
+        resultsAfter[selectedObject.lp].xRealPoMutacji = maxXReal;
       }
-      resultsAfter.forEach((el) => {
-        if (el.lp - 1 !== selectedIndex) {
-          el.fX = el.newFx;
-          el.xReal1 = el.xRealPoMutacji;
-        } else {
-          el.fX = max;
-          el.xReal1 = maxXReal;
-        }
-      });
-    } else {
+    } else if (fMax[i] < fMax[i - 1] && elite === true) {
       i--;
       resultsAfter.forEach((el) => {
-        el.fX = el.newFx;
-        el.xReal1 = el.xRealPoMutacji;
+        // el.fX = el.newFx;
+        el.xReal = el.xRealPoMutacji;
       });
       fMax.pop();
       fMin.pop();
       fMid.pop();
     }
 
-    const tempGx = FxToGx(resultsAfter, d, minmax);
+    resultsAfter.forEach((el) => {
+      el.xReal = el.xRealPoMutacji;
+    });
+
+    const tempFx = createFx(resultsAfter);
+    const tempGx = FxToGx(tempFx, d, minmax);
     const tempR = GxToR(tempGx);
     const tempPc = rToPc(tempR, a, b, l, pk, n);
     const tempKids = PcToKids(tempPc);
@@ -105,26 +106,21 @@ export function loopOverResults(
     resultsAfter = newResultsAfter;
   }
 
-  const resultsSorted = [];
-
   const findIndexInSummary = (array, xReal, xBin, fX) => {
-    return array.findIndex(
-      (item) => item.xReal === xReal && item.xBin === xBin && item.fX === fX
-    );
+    return array.findIndex((item) => item.xReal === xReal && item.fX === fX);
   };
-
   const percResult = [...resultsAfter];
 
   percResult.forEach((obj) => {
-    const { xReal1, xBin, fX } = obj;
+    const { xReal, xBin, fX } = obj;
 
-    const indexInSummary = findIndexInSummary(resultsSorted, xReal1, xBin, fX);
+    const indexInSummary = findIndexInSummary(resultsSorted, xReal, xBin, fX);
 
     if (indexInSummary !== -1) {
       resultsSorted[indexInSummary].percentage += (1 / percResult.length) * 100;
     } else {
       resultsSorted.push({
-        xReal: xReal1,
+        xReal: xReal,
         xBin: xBin,
         fX: fX,
         percentage: (1 / percResult.length) * 100,
@@ -132,11 +128,10 @@ export function loopOverResults(
     }
   });
 
-  resultsSorted.sort((a, b) => b.fX - a.fX);
+  resultsSorted.sort((a, b) => b.percentage - a.percentage);
 
   for (let i = 0; i < resultsSorted.length; i++) {
     resultsSorted[i].lp = i + 1;
   }
-
   return [resultsSorted, fMax, fMid, fMin];
 }

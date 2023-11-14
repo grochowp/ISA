@@ -1,4 +1,4 @@
-export function CreateXReal1(a, b, d) {
+export function CreatexReal(a, b, d) {
   return (Math.random() * (b - a) + a).toFixed(d);
 }
 export function RealToInt(a, b, x, l) {
@@ -23,17 +23,24 @@ export function LpToFx(a, b, d, n, l) {
   let newResults = [];
 
   for (let i = 0; i < n; i++) {
-    const xReal1 = Number(CreateXReal1(Number(a), Number(b), d));
-    const fX = Number(RealToFX(xReal1));
+    const xReal = Number(CreatexReal(Number(a), Number(b), d));
+    const fX = Number(RealToFX(xReal));
 
     const newResult = {
-      lp: i + 1,
-      xReal1,
+      lp: i,
+      xReal,
       fX,
     };
     newResults.push(newResult);
   }
   return newResults;
+}
+
+export function createFx(results) {
+  for (let i = 0; i < results.length; i++) {
+    results[i].fX = Number(RealToFX(results[i].xReal));
+  }
+  return results;
 }
 
 export function FxToGx(results, d, minmax) {
@@ -85,18 +92,18 @@ export function rToPc(results, a, b, l, pk, n) {
     //xRealSelected
     for (let j = 0; j <= results.length; j++) {
       if (j === 0 && results[i].r <= results[j].Qi) {
-        results[i].xRealSelected = results[j].xReal1;
+        results[i].xRealSelected = results[j].xReal;
       } else if (
         j >= 1 &&
         results[i].r > results[j - 1]?.Qi &&
         results[i].r <= results[j]?.Qi
       ) {
-        results[i].xRealSelected = results[j].xReal1;
+        results[i].xRealSelected = results[j].xReal;
       }
     }
 
     // xBin
-    xInt = RealToInt(a, b, results[i].xReal1, l);
+    xInt = RealToInt(a, b, results[i].xRealSelected, l);
     xBin = IntToBin(xInt, l);
     results[i].xBin = xBin;
 
@@ -126,20 +133,20 @@ export function PcToKids(results) {
     if (!results[i].parents) results[i].kids = results[i].xBin;
     else if (!firstParent) {
       firstParent = results[i]?.parents;
-      firstParentIndex = results[i].lp - 1;
+      firstParentIndex = results[i].lp;
       // dodaje indeks rodzica do arrayu
       parentsArray.push(firstParentIndex);
     } else if (firstParent && !secondParent) {
       secondParent = results[i]?.parents;
 
       if (secondParent) {
-        secondParentIndex = results[i].lp - 1;
+        secondParentIndex = results[i].lp;
         //prettier-ignore
         results[i].kids = secondParent.substring(0, results[i].Pc) + firstParent.substring(results[i].Pc);
         //prettier-ignore
         results[firstParentIndex].kids = firstParent.substring(0, results[i].Pc) + secondParent.substring(results[i].Pc);
         // dodaje indeks rodzica do arrayu
-        parentsArray.push(results[i].lp - 1);
+        parentsArray.push(results[i].lp);
         // jesli istnial drugi rodzic to powstały dzieci i xBiny rodziców zostają usunięte z pamięci
         firstParent = "";
         secondParent = "";
