@@ -6,19 +6,11 @@ import {
   KidsToFX,
   rToPc,
   GxToR,
-} from "./functions-v2";
-import { Table } from "./Table";
-import { TableAfter } from "./TableAfter";
-import { loopOverResults } from "./Data";
-import { Graph } from "./Graph";
-
-const Tests = ({ results }) => {
-  return (
-    <div className="results">
-      <table className="table">bbbbbbbbbbbb</table>
-    </div>
-  );
-};
+} from "./model/functions-v2";
+import { Table } from "./view/Table";
+import { TableAfter } from "./view/TableAfter";
+import { loopOverResults } from "./model/Data";
+import { Graph } from "./view/Graph";
 
 export default function App() {
   const [a, setA] = useState(-4);
@@ -29,20 +21,23 @@ export default function App() {
   const [pk, setPk] = useState(0.85);
   const [pm, setPm] = useState(0.005);
   const [minmax, setMinmax] = useState("max");
+
   const [results, setResults] = useState([]);
   const [resultsAfter, setResultsAfter] = useState([]);
   const [dataGraph, setDataGraph] = useState({});
-  const [elite, setElite] = useState(true);
 
+  const [elite, setElite] = useState(true);
   const [displayResults, setDisplayResults] = useState(false);
   const [displayGraph, setDisplayGraph] = useState(false);
   const [displayTests, setDisplayTests] = useState(false);
   const [displayData, setDisplayData] = useState(false);
+  const [enableButtons, setEnableButtons] = useState(true);
 
   const dMultiplier = d === 1 ? 0.1 : d === 2 ? 0.01 : 0.001;
   const l = Math.ceil(Math.log2((b - a) / dMultiplier) + 1);
 
   function handleStart() {
+    setEnableButtons(false);
     displayResults && setDisplayResults(false);
     displayGraph && setDisplayGraph(false);
     displayTests && setDisplayTests(false);
@@ -132,6 +127,7 @@ export default function App() {
           T = <Inputs variab={t} setVar={setT} />
         </span>
         <span>
+          {console.log(dataGraph)}
           min/max =
           <select
             className="inputBox"
@@ -167,20 +163,20 @@ export default function App() {
           <button onClick={handleStarter}>TABELKA</button>
         </span> */}
         <span>
-          <button disabled={dataGraph.length === 0} onClick={handleData}>
+          <button disabled={enableButtons} onClick={handleData}>
             DANE
           </button>
         </span>
         <span>
-          <button disabled={dataGraph.length === 0} onClick={handleGraph}>
+          <button disabled={enableButtons} onClick={handleGraph}>
             WYKRES
           </button>
         </span>
-        <span>
+        {/* <span>
           <button disabled={dataGraph.length === 0} onClick={handleTests}>
             TESTY
           </button>
-        </span>
+        </span> */}
       </div>
 
       {/* {displayResults && (
@@ -204,12 +200,12 @@ export default function App() {
         </div>
       )}
 
-      {displayTests && (
+      {/* {displayTests && (
         <div>
           <br />
           <Tests results={results} />
         </div>
-      )}
+      )} */}
     </>
   );
 }
